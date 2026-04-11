@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>学生信息管理</title>
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+
+<body>
+  <h1>新增学员</h1>
+  <form class="info" autocomplete="off">
+    姓名：<input type="text" class="uname" name="uname" />
+    年龄：<input type="text" class="age" name="age" />
+    性别:
+    <select name="gender" class="gender">
+      <option value="男">男</option>
+      <option value="女">女</option>
+    </select>
+    薪资：<input type="text" class="salary" name="salary" />
+    就业城市：<select name="city" class="city">
+      <option value="北京">北京</option>
+      <option value="上海">上海</option>
+      <option value="广州">广州</option>
+      <option value="深圳">深圳</option>
+      <option value="曹县">曹县</option>
+    </select>
+    <button class="add">录入</button>
+  </form>
+
+  <h1>就业榜</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>学号</th>
+        <th>姓名</th>
+        <th>年龄</th>
+        <th>性别</th>
+        <th>薪资</th>
+        <th>就业城市</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <!-- <td>1001</td>
+        <td>欧阳霸天</td>
+        <td>19</td>
+        <td>男</td>
+        <td>15000</td>
+        <td>上海</td>
+        <td>
+          <a href="javascript:">删除</a> -->
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+  <script>
+    // 参考数据
+    const initData = [
+      {
+        stuId: 1001,
+        uname: '欧阳霸天',
+        age: 19,
+        gender: '男',
+        salary: '20000',
+        city: '上海',
+      }
+    ]
+    // localStorage.setItem('student-data', JSON.stringify(initData))
+    // 1. 渲染数据
+    const arr = JSON.parse(localStorage.getItem('studentData')) || []// 从localStorage中获取数据，没有则创建一个空数组,JSON.parse将字符串转换为数组对象        
+    //利用map遍历数组，利用join将数组转化成字符串，再用innerHTML渲染到页面
+    const tbody = document.querySelector('tbody')
+    function render() {
+      const trArr = arr.map(function (ele, index) {
+        return `
+   <tr>
+        <td>${ele.stuId}</td>
+        <td>${ele.uname}</td>
+        <td>${ele.age}</td>
+        <td>${ele.gender}</td>
+        <td>${ele.salary}</td>
+        <td>${ele.city}</td>
+        <td>
+          <a href="javascript:" data-index="${index}">删除</a>
+        </td>
+      </tr>
+  `
+      })
+      tbody.innerHTML = trArr.join('')
+    }
+    render()
+
+
+
+    // 2. 新增数据
+    //2.1获取表单元素
+    const info = document.querySelector('.info')
+    const uname = document.querySelector('.uname')
+    const age = document.querySelector('.age')
+    const gender = document.querySelector('.gender')
+    const salary = document.querySelector('.salary')
+    const city = document.querySelector('.city')
+    //2.2绑定提交时间
+    info.addEventListener('submit', function (e) {
+      e.preventDefault()// 阻止表单默认提交行为
+      if (!uname.value || !age.value || !gender.value || !salary.value) {
+        return alert('请填写完整信息')// 非空判断
+      }
+      //2.3给arr数组追加对象，对象的属性为表单的值
+      arr.push({
+        stuId: arr[arr.length - 1].stuId + 1,
+        uname: uname.value,
+        age: age.value,
+        gender: gender.value,
+        salary: salary.value,
+        city: city.value,
+      })
+      //2.4渲染数据
+      render()
+      info.reset()
+      localStorage.setItem('studentData', JSON.stringify(arr))  // 2.5把数组重新存到localStorage中
+    })
+
+
+
+    // 3. 删除数据
+    tbody.addEventListener('click', function (e) {
+      if (e.target.tagName === 'A') {
+        arr.splice(e.target.dataset.index, 1)
+        render()
+        localStorage.setItem('studentData', JSON.stringify(arr))  // 2.5把数组重新存到localStorage中
+      }
+    })
+    // 4. 清空数据
+
+  </script>
+</body>
+
+</html>

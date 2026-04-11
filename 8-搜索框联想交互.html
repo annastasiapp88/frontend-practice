@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>搜索框联想组件 - JS事件综合练习</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Microsoft Yahei", sans-serif;
+    }
+
+    .search-box {
+      width: 400px;
+      margin: 50px auto;
+      position: relative;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #searchInput:focus {
+      border-color: #409eff;
+    }
+
+    .suggest-list {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fff;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+    }
+
+    .suggest-item {
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .suggest-item:hover,
+    .suggest-item.active {
+      background-color: #f5f7fa;
+      color: #409eff;
+    }
+
+    .no-data {
+      padding: 10px 15px;
+      color: #999;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="请输入搜索内容...">
+    <ul class="suggest-list" id="suggestList"></ul>
+  </div>
+
+  <script>
+    // 1. 预设联想词库
+    const suggestList = [
+      "JavaScript", "Java", "Python", "TypeScript", "前端开发",
+      "后端开发", "Vue", "React", "Node.js", "MySQL",
+      "Redis", "Docker", "Git", "GitHub", "数据结构"
+    ];
+
+    // 2. 获取DOM元素
+    const searchInput = document.getElementById('searchInput');
+    const suggestListEl = document.getElementById('suggestList');
+
+    // 3. 全局状态
+    let currentIndex = -1; // 当前选中的联想项索引
+    let matchData = [];   // 当前匹配的联想数据
+
+    // 4. 工具函数：去除首尾空格（对应知识点trim()）
+    const trimInput = (str) => str.trim();
+
+    // 5. 渲染联想列表函数
+    const renderSuggestList = (data) => {
+      // 无数据时渲染空提示
+      if (data.length === 0) {
+        suggestListEl.innerHTML = '<li class="no-data">无匹配结果</li>';
+        suggestListEl.style.display = 'block';
+        return;
+      }
+
+      // 渲染匹配项，最多展示5个
+      const html = data.slice(0, 5).map((item, index) => {
+        return `<li class="suggest-item" data-index="${index}">${item}</li>`;
+      }).join('');
+
+      suggestListEl.innerHTML = html;
+      suggestListEl.style.display = 'block';
+      currentIndex = -1; // 重置选中索引
+    };
+
+    // 6. 匹配联想词函数
+    const matchSuggest = (keyword) => {
+      if (!keyword) {
+        suggestListEl.style.display = 'none';
+        return [];
+      }
+      // 不区分大小写匹配
+      return suggestList.filter(item =>
+        item.toLowerCase().includes(keyword.toLowerCase())
+      );
+    };
+
+    // 7. 事件监听：input事件（文本事件，实时输入联想）
+    searchInput.addEventListener('input', function (e) {
+      // 对应知识点：事件对象e，trim()方法
+      const inputVal = trimInput(e.target.value);
+      matchData = matchSuggest(inputVal);
+      renderSuggestList(matchData);
+    });
+
+    // 8. 事件监听：focus事件（焦点事件，聚焦显示列表）
+    searchInput.addEventListener('focus', function (e) {
+      const inputVal = trimInput(e.target.value);
+      // 已有输入时重新渲染列表
+      if (inputVal) {
+        matchData = matchSuggest(inputVal);
+        renderSuggestList(matchData);
+      }
+    });
+
+    // 9. 事件监听：blur事件（焦点事件，失焦隐藏列表）
+    searchInput.addEventListener('blur', function () {
+      // 延迟隐藏，避免点击列表项时列表先消失
+      setTimeout(() => {
+        suggestListEl.style.display = 'none';
+        currentIndex = -1;
+      }, 200);
+    });
+
+    // 10. 事件监听：keydown事件（键盘事件，键盘操作）
+    searchInput.addEventListener('keydown', function (e) {
+      // 对应知识点：事件对象key属性
+      const key = e.key;
+
+      // 列表未显示时不处理键盘操作
+      if (suggestListEl.style.display !== 'block') return;
+
+      // 向下箭头：选中下一项
+      if (key === 'ArrowDown') {
+        e.preventDefault(); // 阻止光标移动
+        currentIndex = (currentIndex + 1) % Math.min(matchData.length, 5);
+        updateActiveItem();
+      }
+      // 向上箭头：选中上一项
+      else if (key === 'ArrowUp') {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + Math.min(matchData.length, 5)) % Math.min(matchData.length, 5);
+        updateActiveItem();
+      }
+      // 回车键：确认选中
+      else if (key === 'Enter') {
+        e.preventDefault();
+        if (currentIndex >= 0) {
+          confirmSelect(currentIndex);
+        }
+      }
+      // ESC键：关闭列表
+      else if (key === 'Escape') {
+        suggestListEl.style.display = 'none';
+        currentIndex = -1;
+      }
+    });
+
+    // 11. 更新选中项高亮
+    const updateActiveItem = () => {
+      const items = suggestListEl.querySelectorAll('.suggest-item');
+      // 移除所有高亮
+      items.forEach(item => item.classList.remove('active'));
+      // 给当前项加高亮
+      if (currentIndex >= 0 && items[currentIndex]) {
+        items[currentIndex].classList.add('active');
+      }
+    };
+
+    // 12. 确认选中联想项
+    const confirmSelect = (index) => {
+      searchInput.value = matchData[index];
+      suggestListEl.style.display = 'none';
+      currentIndex = -1;
+    };
+
+    // 13. 事件委托：给ul绑定click事件（鼠标事件click，优化性能）
+    suggestListEl.addEventListener('click', function (e) {
+      // 对应知识点：事件对象type、clientX/clientY、offsetX/offsetY，this环境对象
+      console.log('触发事件类型：', e.type);
+      console.log('视口坐标：', `clientX: ${e.clientX}, clientY: ${e.clientY}`);
+      console.log('元素内偏移坐标：', `offsetX: ${e.offsetX}, offsetY: ${e.offsetY}`);
+
+      // 事件委托：判断点击的是li元素
+      const target = e.target.closest('.suggest-item');
+      if (target) {
+        const index = Number(target.dataset.index);
+        console.log('当前选中项：', matchData[index]);
+        confirmSelect(index);
+      }
+    });
+
+    // 14. 事件监听：mouseenter/mouseleave（鼠标事件，hover高亮）
+    suggestListEl.addEventListener('mouseenter', function (e) {
+      const target = e.target.closest('.suggest-item');
+      if (target) {
+        // 鼠标hover时同步选中索引
+        const index = Number(target.dataset.index);
+        currentIndex = index;
+        updateActiveItem();
+      }
+    }, true);
+
+    // 15. 回调函数示例：事件监听中的回调函数
+    const handleMouseLeave = function () {
+      // 鼠标离开列表时重置高亮
+      const items = suggestListEl.querySelectorAll('.suggest-item');
+      items.forEach(item => item.classList.remove('active'));
+      currentIndex = -1;
+    };
+    suggestListEl.addEventListener('mouseleave', handleMouseLeave);
+  </script>
+</body>
+
+</html>

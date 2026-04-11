@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    //简易版
+    function creatCounter() {
+      let count = 0
+      function increment() {
+        count++
+        return count
+      }
+      return increment
+    }
+    let counter = creatCounter()
+    console.log(counter());
+    console.log(counter());
+    console.log(counter());
+    //进阶版计数器
+    function creatAdvancedCounter(initialValue = 0) {
+      let count = initialValue
+      return {
+        increment() {
+          count++
+          return count
+        },
+        decrement() {
+          count--
+          return count
+        },
+        reset() {
+          count = initialValue
+          return count
+        },
+        getCurrent() {
+          return count
+        }
+      }
+    }
+    let counter2 = creatAdvancedCounter(100)
+    console.log(counter2.increment());
+    console.log(counter2.getCurrent());
+    console.log(counter2.decrement());
+    console.log(counter2.getCurrent());
+    console.log(counter2.reset());
+    console.log(counter2.getCurrent());
+  </script>
+</body>
+
+</html>

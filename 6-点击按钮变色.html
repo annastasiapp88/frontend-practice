@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>点击变色小Demo</title>
+  <style>
+    /* 简单美化一下 */
+    body {
+      transition: 0.5s;
+      /* 变色更丝滑 */
+      text-align: center;
+      padding: 100px 0;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 15px 30px;
+      cursor: pointer;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+
+    button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>点击下面按钮改变页面颜色</h1>
+  <!-- 按钮 -->
+  <button onclick="choseColor()">点我变色</button>
+
+  <script>
+    //定义数组颜色
+    const colors = ['lightblue', 'lightgreen', 'lightpink', 'orange', 'lavender', 'wheat']
+    //定义函数
+    function choseColor() {
+      const color = Math.floor(Math.random() * colors.length)
+      //改变页面背景色
+      document.body.style.backgroundColor = colors[color]
+    }
+  </script>
+</body>
+
+</html>

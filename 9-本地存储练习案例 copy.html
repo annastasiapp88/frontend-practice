@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0 auto;
+      background: #f5f7fb;
+      font-family: system-ui, 'Segoe UI', sans-serif;
+    }
+
+    .card {
+      width: 400px;
+      height: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(58, 26, 26, 0.1);
+    }
+
+    .info {
+      margin: 20px 0;
+      padding: 12px 0;
+      background: #f8fafc;
+      border-radius: 16px;
+    }
+
+    button {
+      background: #2c3e66;
+      color: #fff;
+      font-size: 14px;
+      border: none;
+      border-radius: 40px;
+      padding: 12px 24px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3a5280;
+    }
+
+    .highlight {
+      color: #2b6e46;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h2>📅 访问记录器</h2>
+    <div class="welcomeMsg">👋 欢迎回来！</div>
+    <div class="info" id="last"></div>
+    <div class="info" id="current"></div>
+    <div class="info" id="visitCount"></div>
+    <button id="Btn">🗑️ 清除记录</button>
+  </div>
+  <script>
+    //1.获取元素
+    const welcomeDiv = document.querySelector('.welcomeMsg')
+    const last = document.querySelector('#last')
+    const current = document.querySelector('#current')
+    const visitCountDiv = document.querySelector('#visitCount')
+    const Btn = document.querySelector('#Btn')
+
+    //2.封装时间格式化函数
+    function formatTime(date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hour = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const seconds = String(date.getSeconds()).padStart(2, '0')
+      return `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`
+    }
+    //3.读取数据，判断是否首次，显示或者更新，写入存储
+    //3.1获取当前时间
+    const currentTime = new Date()//获取当前时间
+    const currentStr = formatTime(currentTime)//格式化当前时间
+    const currentStamps = currentTime.getTime()//获取当前时间戳，以便于存储
+    // 3.2读取本地存储历史记录
+    let lastVisitTime = localStorage.getItem('lastVisitTime')
+    let lastStamps = localStorage.getItem('lastStamps')
+    let visitCount = localStorage.getItem('visitCount')
+    //3.3判断是否首次访问
+    ///////判断条件错误，这里应该判断本地存储中是否有上次访问的时间戳，而不是上次访问的时间
+    if (lastStamps === null) {
+      welcomeDiv.innerHTML = '欢迎来到我们的网站！'
+      last.innerHTML = `📌 上次访问时间：<span class="highlight">(暂无访问记录)</span>`
+      visitCount = 1
+    } else {
+      ////////////most
+      const lastDate = new Date(parseInt(lastStamps))//将时间戳转换为时间对象
+      const lastVisitTimeStr = formatTime(lastDate)//格式化上次访问时间
+      welcomeDiv.innerHTML = '欢迎回到我们的网站！'
+      last.innerHTML = `📌 上次访问时间：<span class="highlight">${lastVisitTimeStr}</span>`
+      visitCount = parseInt(visitCount) + 1
+    }
+    //3.4显示本次访问时间和次数
+    current.innerHTML = `本次访问时间：<span class="highlight">${currentStr}</span>`
+    visitCountDiv.innerHTML = `🔢 访问次数：<span class="highlight">${visitCount}</span>`
+    //3.5将本次信息写入本地存储
+    localStorage.setItem('lastStamps', currentStamps)
+    localStorage.setItem('visitCount', visitCount)
+
+
+    //4.清除记录按钮
+    Btn.addEventListener('click', function () {
+      localStorage.removeItem('lastStamps')
+      localStorage.removeItem('visitCount')
+      alert('记录已清除')
+      location.reload()
+      //刷新页面，显示最新记录
+    })
+  </script>
+</body>
+
+</html>
