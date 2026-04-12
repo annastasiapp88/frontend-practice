@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .error {
+      color: red;
+    }
+
+    .success {
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 修改按钮类型，并移除多余的span闭合标签 -->
+  <form action="#" onsubmit="return false;">
+    手机号：<input type="tel" id="phone">
+    <button type="button" class="phoneBtn">验证</button>
+    <span id="phoneMsg"></span>
+    <br>
+    邮 箱：<input type="email" id="email">
+    <button type="button" class="emailBtn">验证</button>
+    <span id="emailMsg"></span>
+  </form>
+
+  <script>
+    //1.获取元素
+    const phone = document.getElementById('phone');
+    const email = document.getElementById('email');
+    const phoneBtn = document.querySelector('.phoneBtn');
+    const emailBtn = document.querySelector('.emailBtn');
+    const phoneMsg = document.getElementById('phoneMsg');
+    const emailMsg = document.getElementById('emailMsg');
+    //2.设置验证函数
+    function validatePhone(phoneValue) {
+      const reg = /^1[345789]\d{9}$/;
+      return reg.test(phoneValue);
+    }
+
+    function validateEmail(emailValue) {
+      const reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
+      return reg.test(emailValue);
+    }
+    // 3.给按钮绑定点击事件
+    phoneBtn.addEventListener('click', function () {
+      // 3.1获取手机号值
+      const isValid = validatePhone(phone.value.trim());
+      phoneMsg.classList.remove('error', 'success');
+      if (!isValid) {
+        phoneMsg.classList.add('error');
+        phoneMsg.innerHTML = '手机号格式错误';
+      } else {
+        phoneMsg.classList.add('success');
+        phoneMsg.innerHTML = '手机号格式正确';
+      }
+    });
+
+    emailBtn.addEventListener('click', function () {
+      const isValid = validateEmail(email.value.trim());
+      emailMsg.classList.remove('error', 'success');
+      if (!isValid) {
+        emailMsg.classList.add('error');
+        emailMsg.innerHTML = '邮箱格式错误';
+      } else {
+        emailMsg.classList.add('success');
+        emailMsg.innerHTML = '邮箱格式正确';
+      }
+    });
+  </script>
+</body>
+<!-- //my bug:点击按钮后，会自动提交表单，导致验证失败 -->
+
+</html>
