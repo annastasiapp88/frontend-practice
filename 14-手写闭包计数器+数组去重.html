@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    //闭包计数器
+    function createCounter(initialCount = 0) {
+      let count = initialCount;
+      return {
+        increment() {
+          count++
+          return count;
+        },
+        decrement() {
+          count--
+          return count;
+        },
+        getCount() {
+          return count;
+        }
+      }
+    }
+
+    const counter = createCounter()
+    console.log(counter.getCount());
+    console.log(counter.increment());
+    console.log(counter.decrement());
+    console.log(counter.getCount());
+
+    //数组去重
+    function uniqueArray(arr) {
+      return [...new Set(arr)]
+    }
+    uniqueArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 10])
+    console.log(uniqueArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 10]))
+
+    //剩余参数运用
+    function sum(...numbers) {//...numbers将传入的所有参数收集到数组中
+      return numbers.reduce((total, num) => total + num, 0)
+    }//reduce方法将数组中的元素累加
+    console.log(sum(1, 2, 3, 4, 5))
+
+  </script>
+</body>
+
+</html>
