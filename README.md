@@ -1,6 +1,6 @@
-# Frontend Practice · JavaScript 练习集
+#  JavaScript 练习案例集
 
-本仓库用于记录前端 JavaScript 学习过程中的代码练习，涵盖 ECMAScript 核心语法、Web APIs 操作以及 JS 进阶相关实践。
+本仓库记录 JavaScript 学习中的代码练习，涵盖 ECMAScript 核心语法、Web APIs 操作以及 JS 进阶相关实践。
 
 ## 📚 知识点范围
 
